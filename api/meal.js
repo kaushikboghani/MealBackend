@@ -18,23 +18,27 @@ mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTop
     .catch((err) => console.log("❌ MongoDB connection error:", err));
 
 // Create Tiffin Data
-    app.post("/api/tiffin", async (req, res) => {
-        try {
-            const tiffin =await Tiffin.findById("67ea88efab2a2c37dea2c6fa")
-            console.log(tiffin)
-            tiffin.Tiffins.push(req.body)
-            // const newTiffin = new Tiffin(req.body);
-            const savedTiffin = await tiffin.save();
-            res.status(201).json(tiffin);
-        } catch (error) {
-            res.status(400).json({ message: error.message });
-        }
-    });
+app.post("/api/tiffin", async (req, res) => {
+    try {
+        const settingsId = "67ea88efab2a2c37dea2c6fa"; // Static ID for settings
+        const tiffinEntry = req.body; // Incoming tiffin entry
+
+        const updatedSettings = await TiffinMain.findByIdAndUpdate(
+            settingsId,
+            { $push: { Tiffins: tiffinEntry } }, // Add entry to Tiffins array
+            { new: true, upsert: true } // Return updated doc, create if missing
+        );
+
+        res.status(201).json({ message: "Tiffin entry added successfully!", updatedSettings });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
 
 // Read All Tiffin Data
 app.get("/api/tiffin", async (req, res) => {
     try {
-        const tiffins = await Tiffin.find().populate("mainSettings");
+        const tiffins = await Tiffin.find()
         res.status(200).json(tiffins);
     } catch (error) {
         res.status(500).json({ message: error.message });
