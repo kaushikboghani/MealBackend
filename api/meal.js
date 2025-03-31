@@ -20,7 +20,7 @@ mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTop
 // Create Tiffin Data
 app.post("/api/tiffin", async (req, res) => {
     try {
-        const settingsId = "67ea88efab2a2c37dea2c6fa"; // Static ID for settings
+        const settingsId = "67ea98dcab2a2c37dea2c705"; // Static ID for settings
         const tiffinEntry = req.body; // Incoming tiffin entry
 
         const updatedSettings = await TiffinMain.findByIdAndUpdate(
