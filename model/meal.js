@@ -14,7 +14,7 @@ const TiffinMainSchema = new mongoose.Schema({
   Vibrate: { type: Boolean, default: false },
   Theme: { type: String, default: "sap_horizon" },
   Tiffins: [{
-    Date: { type: Date, required: true },
+    Date: { type: String, required: true },
     NumberofTiffinAxay: { type: Number, required: true },
     NumberofTiffin_Kaushik_Bhargav: { type: Number, required: true },
     TiffinTime: { type: String },
