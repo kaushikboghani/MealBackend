@@ -2,7 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const { Tiffin, TiffinMain } = require("../model/meal");
+const { Tiffin } = require("../model/meal");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -17,65 +17,61 @@ mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTop
     .then(() => console.log("✅ MongoDB Connected..."))
     .catch((err) => console.log("❌ MongoDB connection error:", err));
 
-// Create Tiffin Data
-app.post("/api/tiffin", async (req, res) => {
+// ---------------- CRUD Operations using Query Parameters ----------------
+
+// 1️⃣ **Create Tiffin Entry (POST)**
+app.post("/api/meal", async (req, res) => {
     try {
-        const settingsId = "67ea98dcab2a2c37dea2c705"; // Static ID for settings
-        const tiffinEntry = req.body; // Incoming tiffin entry
-
-        const updatedSettings = await TiffinMain.findByIdAndUpdate(
-            settingsId,
-            { $push: { Tiffins: tiffinEntry } }, // Add entry to Tiffins array
-            { new: true, upsert: true } // Return updated doc, create if missing
-        );
-
-        res.status(201).json({ message: "Tiffin entry added successfully!", updatedSettings });
+        const newTiffin = new Tiffin(req.body);
+        const savedTiffin = await newTiffin.save();
+        res.status(201).json(savedTiffin);
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        res.status(400).json({ error: error.message });
     }
 });
 
-// Read All Tiffin Data
-app.get("/api/tiffin", async (req, res) => {
+// 2️⃣ **Get All Tiffin Entries (GET)**
+app.get("/api/meal", async (req, res) => {
     try {
-        const tiffins = await Tiffin.find()
-        res.status(200).json(tiffins);
+        const tiffins = await Tiffin.find();
+        res.json(tiffins);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ error: error.message });
     }
 });
 
-// Read Single Tiffin Data by ID
-app.get("/api/tiffin/:id", async (req, res) => {
+// 3️⃣ **Get Single Tiffin Entry by Query (GET)**
+// app.get("/api/meal", async (req, res) => {
+//     try {
+//         const tiffin = await Tiffin.findOne(req.query);
+//         if (!tiffin) return res.status(404).json({ message: "Tiffin not found" });
+//         res.json(tiffin);
+//     } catch (error) {
+//         res.status(500).json({ error: error.message });
+//     }
+// });
+
+// 4️⃣ **Update Tiffin Entry by Query (PUT)**
+app.put("/api/meal", async (req, res) => {
     try {
-        const tiffin = await Tiffin.findById(req.params.id).populate("mainSettings");
-        if (!tiffin) return res.status(404).json({ message: "Tiffin data not found" });
-        res.status(200).json(tiffin);
+        const updatedTiffin = await Tiffin.findOneAndUpdate(req.query, req.body, { new: true });
+        if (!updatedTiffin) return res.status(404).json({ message: "Tiffin not found" });
+        res.json(updatedTiffin);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(400).json({ error: error.message });
     }
 });
 
-// Update Tiffin Data by ID
-app.put("/api/tiffin", async (req, res) => {
+// 5️⃣ **Delete Tiffin Entry by Query (DELETE)**
+app.delete("/api/meal", async (req, res) => {
     try {
-        const updatedTiffin = await Tiffin.findByIdAndUpdate(req.query.id, req.body, { new: true });
-        if (!updatedTiffin) return res.status(404).json({ message: "Tiffin data not found" });
-        res.status(200).json(updatedTiffin);
+        const deletedTiffin = await Tiffin.findOneAndDelete(req.query);
+        if (!deletedTiffin) return res.status(404).json({ message: "Tiffin not found" });
+        res.json({ message: "Tiffin entry deleted" });
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        res.status(500).json({ error: error.message });
     }
 });
 
-// Delete Tiffin Data by ID
-app.delete("/api/tiffin", async (req, res) => {
-    try {
-        const deletedTiffin = await Tiffin.findByIdAndDelete(req.query.id);
-        if (!deletedTiffin) return res.status(404).json({ message: "Tiffin data not found" });
-        res.status(200).json({ message: "Tiffin data deleted successfully" });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
-
-app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
+// Server Listener
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

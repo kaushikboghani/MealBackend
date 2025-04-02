@@ -8,21 +8,18 @@ mongoose.connect("mongodb+srv://pdev5771:rxHFzG2xPEkkocvM@cluster0.bso1d.mongodb
 .then(() => console.log("✅ MongoDB Connected..."))
 .catch((err) => console.log("❌ MongoDB connection error:", err));
 
-// Main Schema for common properties with Tiffins array
-const TiffinMainSchema = new mongoose.Schema({
-  Sound: { type: Boolean, default: false },
-  Vibrate: { type: Boolean, default: false },
-  Theme: { type: String, default: "sap_horizon" },
-  Tiffins: [{
-    Date: { type: String, required: true },
-    NumberofTiffinAxay: { type: Number, required: true },
-    NumberofTiffin_Kaushik_Bhargav: { type: Number, required: true },
-    TiffinTime: { type: String },
-    AxayMealPrice: { type: Number, default: 0 },
-    Kaushik_Bhargav_meal_Price: { type: Number, default: 0 }
-  }]
+const TiffinSchema = new mongoose.Schema({
+  Date: { type: String, required: true },
+  User: { type: String, required: true },
+  NumberofTiffinAxay: { type: Number },
+  NumberofTiffin_Kaushik_Bhargav: { type: Number},
+  NumberofTiffinvivek: { type: Number},
+  TiffinTime: { type: String },
+  AxayMealPrice: { type: Number},
+  Kaushik_Bhargav_meal_Price: { type: Number},
+  vivekMealPrice: {type: Number },
 }, { timestamps: true });
 
-const TiffinMain = mongoose.model("TiffinMain", TiffinMainSchema, "tiffin_main");
+const Tiffin = mongoose.model("meal", TiffinSchema);
 
-module.exports = { TiffinMain };
+module.exports = { Tiffin };
