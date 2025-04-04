@@ -40,18 +40,7 @@ app.get("/api/meal", async (req, res) => {
     }
 });
 
-// 3️⃣ **Get Single Tiffin Entry by Query (GET)**
-// app.get("/api/meal", async (req, res) => {
-//     try {
-//         const tiffin = await Tiffin.findOne(req.query);
-//         if (!tiffin) return res.status(404).json({ message: "Tiffin not found" });
-//         res.json(tiffin);
-//     } catch (error) {
-//         res.status(500).json({ error: error.message });
-//     }
-// });
 
-// 4️⃣ **Update Tiffin Entry by Query (PUT)**
 app.put("/api/meal", async (req, res) => {
     try {
         const updatedTiffin = await Tiffin.findOneAndUpdate(req.query, req.body, { new: true });
